@@ -1,15 +1,24 @@
 #!/bin/bash
 
-if [ $# -lt 1 ]; then
-    echo "input *.calc file needed"
+cd lexyacc-code_lab3
+# Check for correct usage
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <file.calc>"
     exit 1
 fi
 
-INPUT="$1" # Path to file
-INPUT_FILE=$(basename "$INPUT" .s) # Just filename (*.calc)
+# Get the input file and the base name for the output files
+INPUT="$1"
+BASENAME=$(basename "$INPUT" .calc)
 
+./build
+./calc3b.c "$INPUT" > "$BASENAME.s"
 
-as -o "${INPUT_FILE}.o" "$INPUT"
-#ld -o "$INPUT_FILE" "${INPUT_FILE}.o" || exit 3
+# Assemble the generated assembly code to produce an object file
+gcc -c "$BASENAME.s" -o "$BASENAME.o"
 
-#echo "$INPUT_FILE"
+# Link the object file to produce the final executable
+gcc "$BASENAME.o" -o "$BASENAME"
+
+# Cleanup
+rm "$BASENAME.o"

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "calc3.h"
 #include "y.tab.h"
 
@@ -70,14 +71,27 @@ int ex(nodeType *p) {
             switch(p->opr.oper) {
         case GCD:   printf("\tcall\tgcd\n"); break;
             case '+':   printf("\tadd\n"); break;
-            case '-':   printf("\tsub\n"); break; 
+            case '-':
+                ex(p->opr.op[0]);
+                ex(p->opr.op[1]);
+                printf("\tpopq\t%%rbx\n");
+                printf("\tpopq\t%%rax\n");
+                printf("\tsubq\t%%rbx, %%rax\n");
+                printf("\tpushq\t%%rax\n");
+                break;
             case '*':   printf("\tmul\n"); break;
             case '/':   printf("\tdiv\n"); break;
             case '<':   printf("\tcompLT\n"); break;
-            case '>':   printf("\tcompGT\n"); break;
+            case '>': 
+                printf("\tcmpq\t%%rbx, %%rax\n\tjl\tL%03d\n", lbl); 
+                
+                break;
             case GE:    printf("\tcompGE\n"); break;
             case LE:    printf("\tcompLE\n"); break;
-            case NE:    printf("\tcmpq\t%%rbx, %%rax\n\tjne\tL%03d\n", lbl2 == lbl++); break;
+            case NE:    
+                //printf("\tcompNE\n");
+                printf("\tcmpq\t%%rbx, %%rax\n"); 
+                break;
             }
         }
     }
