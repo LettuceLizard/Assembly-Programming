@@ -2,7 +2,9 @@
 #include "calc3.h"
 #include "y.tab.h"
 
+
 static int lbl;
+char *registers[] = {"rax", "rbx", "rcx", "rdx", "rsi", "rdi"};
 
 int ex(nodeType *p) {
     int lbl1, lbl2;
@@ -10,10 +12,10 @@ int ex(nodeType *p) {
     if (!p) return 0;
     switch(p->type) {
     case typeCon:       
-        printf("\tpush\t%d\n", p->con.value); 
+        printf("\tpushq\t%d\n", p->con.value); 
         break;
     case typeId:        
-        printf("\tpush\t%c\n", p->id.i + 'a'); 
+        printf("\tpushq\t%%%s\n", registers[p->id.i]);
         break;
     case typeOpr:
         switch(p->opr.oper) {
@@ -44,29 +46,29 @@ int ex(nodeType *p) {
             break;
         case PRINT:     
             ex(p->opr.op[0]);
-            printf("\tprint\n");
+            printf("\tcall\tprint\n");
             break;
         case '=':       
             ex(p->opr.op[1]);
-            printf("\tpop\t%c\n", p->opr.op[0]->id.i + 'a');
+            printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i]);
             break;
         case UMINUS:    
             ex(p->opr.op[0]);
             printf("\tneg\n");
             break;
-	case FACT:
-  	    ex(p->opr.op[0]);
-	    printf("\tfact\n");
-	    break;
-	case LNTWO:
-	    ex(p->opr.op[0]);
-	    printf("\lntwo\n");
-	    break;
+    case FACT:
+        ex(p->opr.op[0]);
+        printf("\tcall\tfact\n");
+        break;
+    case LNTWO:
+        ex(p->opr.op[0]);
+        printf("\tcall\tlntwo\n");
+        break;
         default:
             ex(p->opr.op[0]);
             ex(p->opr.op[1]);
             switch(p->opr.oper) {
-	    case GCD:   printf("\tgcd\n"); break;
+        case GCD:   printf("\tcall\tgcd\n"); break;
             case '+':   printf("\tadd\n"); break;
             case '-':   printf("\tsub\n"); break; 
             case '*':   printf("\tmul\n"); break;
@@ -75,10 +77,9 @@ int ex(nodeType *p) {
             case '>':   printf("\tcompGT\n"); break;
             case GE:    printf("\tcompGE\n"); break;
             case LE:    printf("\tcompLE\n"); break;
-            case NE:    printf("\tcompNE\n"); break;
-            case EQ:    printf("\tcompEQ\n"); break;
+            case NE:    printf("\tcmpq\t%%rbx, %%rax\n\tjne\tL%03d\n", lbl2 == lbl++); break;
             }
         }
     }
     return 0;
-}
+}  
