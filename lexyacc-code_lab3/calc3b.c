@@ -5,7 +5,7 @@
 
 
 static int lbl;
-char *registers[] = {"rax", "rbx", "rcx", "rdx", "rsi", "rdi"};
+char *registers[] = {"rax", "rbx", "rcx", "rdx", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15"};
 
 int ex(nodeType *p) {
     int lbl1, lbl2;
@@ -16,7 +16,7 @@ int ex(nodeType *p) {
         printf("\tpushq\t%d\n", p->con.value); 
         break;
     case typeId:        
-        printf("\tpushq\t%%%s\n", registers[p->id.i]);
+        printf("\tpushq\t%%%s\n", registers[p->id.i % 14]);
         break;
     case typeOpr:
         switch(p->opr.oper) {
@@ -51,11 +51,12 @@ int ex(nodeType *p) {
             break;
         case '=':       
             ex(p->opr.op[1]);
-            printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i]);
+            printf("\tpopq\t%%%s\n", registers[(p->opr.op[0]->id.i % 14)]);
+            //printf("\tpopq\t%%%d\n", p->opr.op[0]->id.i);
             break;
         case UMINUS:    
             ex(p->opr.op[0]);
-            printf("\tneg\n");
+            printf("\tneg\t%%%s\n", registers[(p->opr.op[0]->id.i % 14)]);
             break;
     case FACT:
         ex(p->opr.op[0]);
@@ -70,27 +71,64 @@ int ex(nodeType *p) {
             ex(p->opr.op[1]);
             switch(p->opr.oper) {
         case GCD:   printf("\tcall\tgcd\n"); break;
-            case '+':   printf("\tadd\n"); break;
+            case '+':
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\taddq\t%%%s, %%%s\n", registers[p->opr.op[1]->id.i % 14], registers[p->opr.op[0]->id.i % 14]);
+                printf("\tpushq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                break;
             case '-':
-                ex(p->opr.op[0]);
-                ex(p->opr.op[1]);
+                //ex(p->opr.op[0]);
+                //ex(p->opr.op[1]);
                 printf("\tpopq\t%%rbx\n");
                 printf("\tpopq\t%%rax\n");
                 printf("\tsubq\t%%rbx, %%rax\n");
                 printf("\tpushq\t%%rax\n");
                 break;
-            case '*':   printf("\tmul\n"); break;
-            case '/':   printf("\tdiv\n"); break;
-            case '<':   printf("\tcompLT\n"); break;
-            case '>': 
-                printf("\tcmpq\t%%rbx, %%rax\n\tjl\tL%03d\n", lbl); 
-                
+            case '*':
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\timulq\t%%%s, %%%s\n", registers[p->opr.op[1]->id.i % 14], registers[p->opr.op[0]->id.i % 14]);
+                printf("\tpushq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
                 break;
-            case GE:    printf("\tcompGE\n"); break;
-            case LE:    printf("\tcompLE\n"); break;
-            case NE:    
-                //printf("\tcompNE\n");
-                printf("\tcmpq\t%%rbx, %%rax\n"); 
+            case '/':
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\tidivq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpushq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                break;
+            case '<':
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\tcmpq\t%%%s, %%%s\n\tjl\tL%03d\n", registers[p->opr.op[1]->id.i % 14], registers[p->opr.op[0]->id.i % 14], lbl);
+                break;
+            case '>': 
+                //ex(p->opr.op[0]);
+                //ex(p->opr.op[1]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\tcmpq\t%%%s, %%%s\n\tjl\tL%03d\n", registers[p->opr.op[1]->id.i % 14], registers[p->opr.op[0]->id.i % 14], lbl);
+                break;
+            case GE:
+                ex(p->opr.op[0]);
+                ex(p->opr.op[1]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\tcmpq\t%%%s, %%%s\n\tjge\tL%03d\n", registers[p->opr.op[1]->id.i % 14], registers[p->opr.op[0]->id.i % 14], lbl);
+                break;
+            case LE:
+                ex(p->opr.op[0]);
+                ex(p->opr.op[1]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\tcmpq\t%%%s, %%%s\n\tjle\tL%03d\n", registers[p->opr.op[1]->id.i % 14], registers[p->opr.op[0]->id.i % 14], lbl);
+                break;
+            case NE:
+                ex(p->opr.op[0]);
+                ex(p->opr.op[1]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\tcmpq\t%%%s, %%%s\n\tjne\tL%03d\n", registers[p->opr.op[1]->id.i % 14], registers[p->opr.op[0]->id.i % 14], lbl);
                 break;
             }
         }
