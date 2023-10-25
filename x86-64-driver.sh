@@ -10,10 +10,15 @@ fi
 INPUT="$1"
 BASENAME=$(basename "$INPUT" .calc)
 
-cd ~/Programmering-i-UNIX-Labb-2/Assembly-Programming/lexyacc-code_lab3
+cd lexyacc-code_lab3
+pwd
 ./build
 #gcc -o calc3i calc3b.c y.tab.c lex.yy.c -lfl
 
+echo ".global main" > "$BASENAME.s"
+echo "main:" >> "$BASENAME.s"
+./calc3b.exe < ../"$INPUT" >> "$BASENAME.s"
+echo $'\tcall\texit' >> "$BASENAME.s"
 
 #echo "./calc3i < ../"$INPUT" "
 ./calc3b.exe < ../"$INPUT" > "$BASENAME.s"
@@ -25,4 +30,4 @@ gcc -c "$BASENAME.s" -o "$BASENAME.o"
 gcc "$BASENAME.o" -o "$BASENAME"
 
 # Cleanup
-rm "$BASENAME.o"
+#rm "$BASENAME.o"
