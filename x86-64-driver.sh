@@ -19,7 +19,7 @@ echo "main:" >> "$BASENAME.s"
 ./calc3b.exe < ../"$INPUT" >> "$BASENAME.s"
 echo $'\tcall\texit' >> "$BASENAME.s"
 
-gcc -c -fPIE "$BASENAME.s" -o "$BASENAME.o"
+gcc -c -g -fPIE "$BASENAME.s" -o "$BASENAME.o"
 #gcc -nostartfiles -no-pie "$BASENAME.s" -o "$BASENAME.o"
 gcc -no-pie "$BASENAME.o" -o "$BASENAME"
 rm "$BASENAME.o"
