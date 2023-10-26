@@ -47,9 +47,9 @@ int ex(nodeType *p) {
             break;
         case PRINT:     
             ex(p->opr.op[0]);
-            printf("\tleaq\tformat(%%rip), %%rdi\n");  // Load the address of the format string into rdi
-            printf("\tmovq\t%%rax, %%rsi\n");         // Move the result of ex() into rsi
-            printf("\txorq\t%%rax, %%rax\n");         // Clear rax to indicate the number of floating-point arguments is zero
+            printf("\tleaq\tformat(%%rip), %%rdi\n");
+            printf("\tmovq\t%%rax, %%rsi\n");
+            printf("\txorq\t%%rax, %%rax\n"); 
             printf("\tcall\tprintf\n");
             break;
         case '=':       
@@ -75,6 +75,8 @@ int ex(nodeType *p) {
             switch(p->opr.oper) {
         case GCD:   printf("\tcall\tgcd\n"); break;
             case '+':
+                //ex(p->opr.op[0]);
+                //ex(p->opr.op[1]);
                 printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
                 printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
                 printf("\taddq\t%%%s, %%%s\n", registers[p->opr.op[1]->id.i % 14], registers[p->opr.op[0]->id.i % 14]);
@@ -95,9 +97,10 @@ int ex(nodeType *p) {
             case '/':
                 printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
                 printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
-                printf("\txorq\t%%rdx, %%rdx\n");  // Clear rdx
+                printf("\tmovq\t%%rax, %%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\txorq\t%%rdx, %%rdx\n");
                 printf("\tidivq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
-                printf("\tpushq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\tpushq\t%%rax\n");
                 break;
             case '<':
                 printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
