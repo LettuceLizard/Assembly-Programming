@@ -81,10 +81,10 @@ int ex(nodeType *p) {
                 printf("\tpushq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
                 break;
             case '-':
-                printf("\tpopq\t%%rbx\n");
-                printf("\tpopq\t%%rax\n");
-                printf("\tsubq\t%%rbx, %%rax\n");
-                printf("\tpushq\t%%rax\n");
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
+                printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\tsubq\t%%%s, %%%s\n", registers[p->opr.op[1]->id.i % 14], registers[p->opr.op[0]->id.i % 14]);
+                printf("\tpushq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
                 break;
             case '*':
                 printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
