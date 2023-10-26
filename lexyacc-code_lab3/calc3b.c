@@ -97,7 +97,7 @@ int ex(nodeType *p) {
             case '/':
                 printf("\tpopq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
                 printf("\tpopq\t%%%s\n", registers[p->opr.op[0]->id.i % 14]);
-                printf("\tmovq\t%%rax, %%%s\n", registers[p->opr.op[0]->id.i % 14]);
+                printf("\tmovq\t%%%s, %%rax\n", registers[p->opr.op[0]->id.i % 14]);
                 printf("\txorq\t%%rdx, %%rdx\n");
                 printf("\tidivq\t%%%s\n", registers[p->opr.op[1]->id.i % 14]);
                 printf("\tpushq\t%%rax\n");
