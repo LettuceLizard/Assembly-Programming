@@ -1,0 +1,57 @@
+    .data
+format: .asciz "%d\n"
+.text
+.global main
+main:
+	pushq	$1000000	; n(r15) = 1000000
+	popq	%r15		
+	pushq	$100000000	; s(rsi) = 100000000
+	popq	%rsi
+	pushq	$0			; a(rax) = 0
+	popq	%rax
+L000:					; while
+	pushq	%r15		; stack = (1000000)
+	pushq	$0			; stack = (1000000, 0)
+	popq	%rax		; rax = 0, stack = (1000000)
+	popq	%r15		; stack = ()
+	cmpq	%rax, %r15	; n < 0
+	jle	L001
+	pushq	%rax		; rax 
+	movq	%rsi, %rax
+	xorq	%rdx, %rdx
+	idivq	%r15
+	pushq	%rax
+	popq	%rdi
+	popq	%rax
+	addq	%rdi, %rax
+	pushq	%rax
+	popq	%rax
+	pushq	%r15
+	pushq	$1
+	popq	%rbx
+	popq	%r15
+	subq	%rbx, %r15
+	pushq	%r15
+	popq	%r15
+	jmp	L000
+L001:
+	pushq	%rax
+	pushq	%rsi
+	pushq	$1000
+	popq	%r8
+	popq	%rsi
+	movq	%rsi, %rax
+	xorq	%rdx, %rdx
+	idivq	%r8
+	pushq	%rax
+	popq	%rdi
+	popq	%rax
+	movq	%rax, %rax
+	xorq	%rdx, %rdx
+	idivq	%rdi
+	pushq	%rax
+	leaq	format(%rip), %rdi
+	movq	%rax, %rsi
+	xorq	%rax, %rax
+	call	printf
+	call	exit
