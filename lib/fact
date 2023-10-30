@@ -1,0 +1,12 @@
+fact:
+    movq    8(%rsp), %rcx     
+    movq    $1, %rax
+    cmpq    $0, %rcx
+    jle     exit
+loop:
+    mulq    %rcx
+    dec     %rcx
+    cmpq    $0, %rcx
+    jg      loop
+exit:
+    ret
