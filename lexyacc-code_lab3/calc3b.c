@@ -59,7 +59,9 @@ int ex(nodeType *p) {
             break;
         case UMINUS:    
             ex(p->opr.op[0]);
-            printf("\tneg\t%%%s\n", registers[(p->opr.op[0]->id.i % 14)]);
+            printf("\tpopq\t%%rax\n");
+            printf("\tneg\t%%rax\n");
+            printf("\tpushq\t%%rax\n");
             break;
     case FACT:
         ex(p->opr.op[0]);
