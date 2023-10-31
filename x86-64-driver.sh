@@ -20,8 +20,8 @@ echo $'\tpopq\t%rbp' >> "$BASENAME.s"
 #echo $'\tcall\texit' >> "$BASENAME.s" -> seg faults
 echo $'\tmovq\t$0, %rdi\n\tmovq\t$60, %rax\n\tsyscall' >> "$BASENAME.s"
 
-gcc -c -g -fPIE "$BASENAME.s" -o "$BASENAME.o"
+gcc -w -c -g -fPIE "$BASENAME.s" -o "$BASENAME.o"
 #gcc -nostartfiles -no-pie "$BASENAME.s" -o "$BASENAME.o"
-gcc -no-pie "$BASENAME.o" -o "$BASENAME"
+gcc -w -no-pie "$BASENAME.o" -o "$BASENAME"
 mv "$BASENAME" ../bin
 rm "$BASENAME.o"

@@ -4,7 +4,7 @@
 # calc3
 bison -y -d calc3.y
 flex calc3.l
-gcc -c y.tab.c lex.yy.c
-gcc y.tab.o lex.yy.o calc3a.c -o calc3a.exe
-gcc y.tab.o lex.yy.o calc3i.c -o calc3i.exe
-gcc y.tab.o lex.yy.o calc3g.c -o calc3g.exe
+gcc -w -c y.tab.c lex.yy.c
+gcc -w y.tab.o lex.yy.o calc3a.c -o calc3a.exe
+gcc -w y.tab.o lex.yy.o calc3i.c -o calc3i.exe
+gcc -w y.tab.o lex.yy.o calc3g.c -o calc3g.exe
