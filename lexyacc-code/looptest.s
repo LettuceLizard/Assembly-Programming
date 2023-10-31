@@ -1,6 +1,19 @@
     .data
 format: .asciz "%d\n"
 .text
+fact:
+    movq    8(%rsp), %rcx
+    movq    $1, %rax
+    cmpq    $0, %rcx
+    jle     exit
+loop:
+    mulq    %rcx
+    cmpq    $0, %rcx
+    decq    %rcx
+    jle     exit
+    jmp     loop
+exit:
+    ret
 .global main
 main:
 	pushq	%rbp
@@ -16,9 +29,9 @@ L000:
 	cmpq	%rdx, %rax
 	jl	L001
 	pushq	-72(%rbp)
-	leaq	format(%rip), %rdi
+	lea	format(%rip), %rdi
 	movq	%rax, %rsi
-	xorq	%rax, %rax
+	movq	$0, %rax
 	call	printf
 	pushq	-72(%rbp)
 	pushq	$1
@@ -31,4 +44,6 @@ L000:
 L001:
 	addq	$80, %rsp
 	popq	%rbp
-	call	exit
+	movq	$0, %rdi
+	movq	$60, %rax
+	syscall

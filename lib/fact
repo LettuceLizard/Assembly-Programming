@@ -1,17 +1,13 @@
 fact:
-    pushq   %rbp
-    movq    %rsp, %rbp
-    pushq   %rbx
-    movq    8(%rbp), %rcx
+    movq    8(%rsp), %rcx
     movq    $1, %rax
     cmpq    $0, %rcx
     jle     exit
 loop:
     mulq    %rcx
-    decq     %rcx
     cmpq    $0, %rcx
-    jg      loop
+    decq    %rcx
+    jle     exit
+    jmp     loop
 exit:
-    popq    %rbx
-    popq    %rbp
     ret

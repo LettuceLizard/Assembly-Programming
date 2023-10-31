@@ -19,43 +19,51 @@ main:
 	pushq	%rbp
 	movq	%rsp, %rbp
 	subq	$80, %rsp
-	pushq	$732
+	pushq	$1000000
+	popq	-112(%rbp)
+	pushq	$100000000
+	popq	-152(%rbp)
+	pushq	$0
 	popq	-8(%rbp)
-	pushq	$2684
-	popq	-16(%rbp)
 L000:
-	pushq	-8(%rbp)
-	pushq	-16(%rbp)
-	popq	%rax
-	popq	%rbx
-	cmpq	%rbx, %rax
-	je	L001
-	pushq	-8(%rbp)
-	pushq	-16(%rbp)
+	pushq	-112(%rbp)
+	pushq	$0
 	popq	%rdx
 	popq	%rax
 	cmpq	%rdx, %rax
-	jle	L002
+	jle	L001
 	pushq	-8(%rbp)
-	pushq	-16(%rbp)
+	pushq	-152(%rbp)
+	pushq	-112(%rbp)
 	popq	%rbx
 	popq	%rax
-	subq	%rbx, %rax
+	idivq	%rbx
+	pushq	%rax
+	popq	%rbx
+	popq	%rax
+	addq	%rbx, %rax
 	pushq	%rax
 	popq	-8(%rbp)
-	jmp	L003
-L002:
-	pushq	-16(%rbp)
-	pushq	-8(%rbp)
+	pushq	-112(%rbp)
+	pushq	$1
 	popq	%rbx
 	popq	%rax
 	subq	%rbx, %rax
 	pushq	%rax
-	popq	-16(%rbp)
-L003:
+	popq	-112(%rbp)
 	jmp	L000
 L001:
 	pushq	-8(%rbp)
+	pushq	-152(%rbp)
+	pushq	$1000
+	popq	%rbx
+	popq	%rax
+	idivq	%rbx
+	pushq	%rax
+	popq	%rbx
+	popq	%rax
+	idivq	%rbx
+	pushq	%rax
 	lea	format(%rip), %rdi
 	movq	%rax, %rsi
 	movq	$0, %rax

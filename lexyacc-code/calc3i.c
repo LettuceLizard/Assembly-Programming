@@ -48,9 +48,9 @@ int ex(nodeType *p) {
             break;
         case PRINT:     
             ex(p->opr.op[0]);
-            printf("\tleaq\tformat(%%rip), %%rdi\n");
+            printf("\tlea\tformat(%%rip), %%rdi\n");
             printf("\tmovq\t%%rax, %%rsi\n");
-            printf("\txorq\t%%rax, %%rax\n"); 
+            printf("\tmovq\t$0, %%rax\n"); 
             printf("\tcall\tprintf\n");
             break;
         case '=':       
