@@ -8,7 +8,6 @@ cd lexyacc-code
 echo "    .data" > "$BASENAME.s"
 echo 'format: .asciz "%d\n"' >> "$BASENAME.s"
 echo ".text" >> "$BASENAME.s"
-#FACT HERE
 cat ../lib/fact >> "$BASENAME.s"
 echo ".global main" >> "$BASENAME.s"
 echo "main:" >> "$BASENAME.s"
@@ -18,7 +17,8 @@ echo $'\tsubq\t$80, %rsp' >> "$BASENAME.s"
 ./calc3i.exe < ../"$INPUT" >> "$BASENAME.s"
 echo $'\taddq\t$80, %rsp' >> "$BASENAME.s"
 echo $'\tpopq\t%rbp' >> "$BASENAME.s"
-echo $'\tcall\texit' >> "$BASENAME.s"
+#echo $'\tcall\texit' >> "$BASENAME.s" -> seg faults
+echo $'\tmovq\t$0, %rdi\n\tmovq\t$60, %rax\n\tsyscall' >> "$BASENAME.s"
 
 gcc -c -g -fPIE "$BASENAME.s" -o "$BASENAME.o"
 #gcc -nostartfiles -no-pie "$BASENAME.s" -o "$BASENAME.o"
