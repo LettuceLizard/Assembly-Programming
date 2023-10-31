@@ -5,6 +5,7 @@ BASENAME=$(basename "$INPUT" .calc)
 cd lexyacc-code
 ./build
 
+
 echo "    .data" > "$BASENAME.s"
 echo 'format: .asciz "%d\n"' >> "$BASENAME.s"
 echo ".text" >> "$BASENAME.s"
@@ -20,8 +21,8 @@ echo $'\tpopq\t%rbp' >> "$BASENAME.s"
 #echo $'\tcall\texit' >> "$BASENAME.s" -> seg faults
 echo $'\tmovq\t$0, %rdi\n\tmovq\t$60, %rax\n\tsyscall' >> "$BASENAME.s"
 
-gcc -w -c -g -fPIE "$BASENAME.s" -o "$BASENAME.o"
+gcc -c -g -fPIE "$BASENAME.s" -o "$BASENAME.o" > /dev/null 2>&1
 #gcc -nostartfiles -no-pie "$BASENAME.s" -o "$BASENAME.o"
-gcc -w -no-pie "$BASENAME.o" -o "$BASENAME"
+gcc -no-pie "$BASENAME.o" -o "$BASENAME" > /dev/null 2>&1
 mv "$BASENAME" ../bin
 rm "$BASENAME.o"
