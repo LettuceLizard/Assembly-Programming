@@ -48,6 +48,7 @@ int ex(nodeType *p) {
             break;
         case PRINT:     
             ex(p->opr.op[0]);
+            printf("\tpopq\t%%rsi\n");
             printf("\tlea\tformat(%%rip), %%rdi\n");
             printf("\tmovq\t%%rax, %%rsi\n");
             printf("\tmovq\t$0, %%rax\n"); 
