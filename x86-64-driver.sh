@@ -9,13 +9,13 @@ cd lexyacc-code
 echo "    .data" > "$BASENAME.s"
 echo 'format: .asciz "%d\n"' >> "$BASENAME.s"
 echo ".text" >> "$BASENAME.s"
-cat ../lib/fact >> "$BASENAME.s"
+cat ../src/fact.s >> "$BASENAME.s"
 echo ".global main" >> "$BASENAME.s"
 echo "main:" >> "$BASENAME.s"
 echo $'\tpushq\t%rbp' >> "$BASENAME.s"
 echo $'\tmovq\t%rsp, %rbp' >> "$BASENAME.s"
 echo $'\tsubq\t$80, %rsp' >> "$BASENAME.s"
-./calc3i.exe < ../"$INPUT" >> "$BASENAME.s"
+cd ../bin && ./calc3i < "../$INPUT" >> "../lexyacc-code/$BASENAME.s" && cd - > /dev/null
 echo $'\taddq\t$80, %rsp' >> "$BASENAME.s"
 echo $'\tpopq\t%rbp' >> "$BASENAME.s"
 #echo $'\tcall\texit' >> "$BASENAME.s" -> seg faults
@@ -25,4 +25,5 @@ gcc -c -g -fPIE "$BASENAME.s" -o "$BASENAME.o" > /dev/null 2>&1
 #gcc -nostartfiles -no-pie "$BASENAME.s" -o "$BASENAME.o"
 gcc -no-pie "$BASENAME.o" -o "$BASENAME" > /dev/null 2>&1
 mv "$BASENAME" ../bin
+mv "$BASENAME.s" ../build
 rm "$BASENAME.o"

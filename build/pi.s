@@ -91,8 +91,8 @@ L001:
 	popq	%rax
 	imulq	%rbx
 	pushq	%rax
+	popq	%rsi
 	lea	format(%rip), %rdi
-	movq	%rax, %rsi
 	movq	$0, %rax
 	call	printf
 	addq	$80, %rsp
