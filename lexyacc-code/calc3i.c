@@ -10,34 +10,34 @@ char *registers[] = {"rax", "rbx", "rcx", "rdx", "rsi", "rdi", "r8", "r9", "r10"
 int ex(nodeType *p) {
     int lbl1, lbl2;
 
-    if (!p) return 0;
+    if (!p) return 0;   // Ret if node is null
     switch(p->type) {
-    case typeCon:       
-        printf("\tpushq\t$%d\n", p->con.value);
+    case typeCon:       // If node is contstant -> 
+        printf("\tpushq\t$%d\n", p->con.value); // Push constant onto stack
         break;
-    case typeId:
+    case typeId:    // If variable -> push the value of the variable by its offset from the base pointer onto the stack
         printf("\tpushq\t%d(%%rbp)\n", -(p->id.i + 1) * 8);  // Adjusted to 8-byte offsets
         break;
-    case typeOpr:
+    case typeOpr:       // If the node is an operator
         switch(p->opr.oper) {
         case WHILE:
-            printf("L%03d:\n", lbl1 = lbl++);
+            printf("L%03d:\n", lbl1 = lbl++);   // Start of loop, create label.
             lbl2 = lbl;
-            ex(p->opr.op[0]);
+            ex(p->opr.op[0]);   // Evaluate condition
             //printf("\tjz\tL%03d\n", lbl2 = lbl++);
-            ex(p->opr.op[1]);
-            printf("\tjmp\tL%03d\n", lbl1);
-            printf("L%03d:\n", lbl2);
+            ex(p->opr.op[1]); // Execute body
+            printf("\tjmp\tL%03d\n", lbl1); // Jmp to start of the loop
+            printf("L%03d:\n", lbl2); // Label for the end of the loop
             break;
         case IF:
             lbl2 = lbl;
-            ex(p->opr.op[0]);
+            ex(p->opr.op[0]); // Evaluate condition
             if (p->opr.nops > 2) {
                 /* if else */
-                ex(p->opr.op[1]);
+                ex(p->opr.op[1]); // Do if branch
                 printf("\tjmp\tL%03d\n", lbl1 = lbl++);
                 printf("L%03d:\n", lbl2);
-                ex(p->opr.op[2]);
+                ex(p->opr.op[2]);   // Else branch
                 printf("L%03d:\n", lbl1);
             } else {
                 /* if */
@@ -47,25 +47,25 @@ int ex(nodeType *p) {
             }
             break;
         case PRINT:     
-            ex(p->opr.op[0]);
-            printf("\tpopq\t%%rsi\n");
-            printf("\tlea\tformat(%%rip), %%rdi\n");
-            printf("\tmovq\t$0, %%rax\n"); 
-            printf("\tcall\tprintf\n");
+            ex(p->opr.op[0]); // Evaluate expression to print
+            printf("\tpopq\t%%rsi\n");  // Pop result to rsi for printing
+            printf("\tlea\tformat(%%rip), %%rdi\n");    // Load address of format string to rdi
+            printf("\tmovq\t$0, %%rax\n");  // Clear rax
+            printf("\tcall\tprintf\n"); // Call printf
             break;
         case '=':       
-            ex(p->opr.op[1]);
-            printf("\tpopq\t%d(%%rbp)\n", -(p->opr.op[0]->id.i + 1) * 8);
+            ex(p->opr.op[1]);   // Evaluate right side
+            printf("\tpopq\t%d(%%rbp)\n", -(p->opr.op[0]->id.i + 1) * 8); // Pop the result and store it in the variable 
             break;
         case UMINUS:    
-            ex(p->opr.op[0]);
-            printf("\tpopq\t%%rax\n");
-            printf("\tneg\t%%rax\n");
-            printf("\tpushq\t%%rax\n");
+            ex(p->opr.op[0]); // Evaluate expression
+            printf("\tpopq\t%%rax\n");  // Pop into rax
+            printf("\tneg\t%%rax\n");   // neg rax
+            printf("\tpushq\t%%rax\n"); // push result back
             break;
     case FACT:
-        ex(p->opr.op[0]);
-        printf("%s%s%s", "\tcall\tfact\n", "\taddq\t$8,%rsp\n","\tpushq\t%rax\n");
+        ex(p->opr.op[0]); // Evaluate expression
+        printf("%s%s%s", "\tcall\tfact\n", "\taddq\t$8,%rsp\n","\tpushq\t%rax\n"); // Call factorial function and adjust stack
         break;
     case LNTWO:
         ex(p->opr.op[0]);
