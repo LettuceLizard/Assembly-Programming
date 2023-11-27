@@ -23,7 +23,7 @@ echo $'\tmovq\t$0, %rdi\n\tmovq\t$60, %rax\n\tsyscall' >> "$BASENAME.s"
 
 gcc -c -g -fPIE "$BASENAME.s" -o "$BASENAME.o" > /dev/null 2>&1
 #gcc -nostartfiles -no-pie "$BASENAME.s" -o "$BASENAME.o"
-gcc -no-pie "$BASENAME.o" -o "$BASENAME" > /dev/null 2>&1
+gcc "$BASENAME.o" -o "$BASENAME" > /dev/null 2>&1
 mv "$BASENAME" ../bin
 mv "$BASENAME.s" ../build
 rm "$BASENAME.o"
